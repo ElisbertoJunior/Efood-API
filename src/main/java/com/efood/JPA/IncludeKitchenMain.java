@@ -1,24 +1,30 @@
-package com.efood.repository;
+package com.efood.JPA;
 
 import com.efood.EfoodApplication;
+import com.efood.domain.repository.KitchenRepository;
 import com.efood.model.Kitchen;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
 
-public class SearchKitchenMain {
+public class IncludeKitchenMain {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext applicationContext = new SpringApplicationBuilder(EfoodApplication.class)
                 .web(WebApplicationType.NONE)
                 .run(args);
 
-        RegisterKitchen registerKitchen = applicationContext.getBean(RegisterKitchen.class);
+        KitchenRepository kitchenRepository = applicationContext.getBean(KitchenRepository.class);
 
-       Kitchen kitchen = registerKitchen.search(1l);
+        Kitchen kitchenOne = new Kitchen();
+        kitchenOne.setName("Brasileira");
 
-        System.out.println(kitchen.getName());
+        Kitchen kitchenTwo = new Kitchen();
+        kitchenTwo.setName("Japonesa");
+
+        kitchenRepository.save(kitchenOne);
+        kitchenRepository.save(kitchenTwo);
 
     }
 }
