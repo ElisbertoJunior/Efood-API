@@ -1,5 +1,8 @@
 package com.efood.controller;
 
+import com.efood.domain.exception.EntityInUseException;
+import com.efood.domain.exception.EntityNotFoundException;
+import com.efood.domain.service.KitchenService;
 import com.efood.infrastructure.repository.KitchenRepositoryJpa;
 import com.efood.model.Kitchen;
 import com.fasterxml.jackson.databind.util.BeanUtil;
@@ -18,8 +21,11 @@ public class KitchenController {
 
     private KitchenRepositoryJpa repository;
 
-    public KitchenController(KitchenRepositoryJpa repository) {
+    private KitchenService service;
+
+    public KitchenController(KitchenRepositoryJpa repository, KitchenService service) {
         this.repository = repository;
+        this.service = service;
     }
 
 
@@ -41,7 +47,7 @@ public class KitchenController {
     @PostMapping
     //@ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Kitchen> add(@RequestBody Kitchen kitchen) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(kitchen));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addKitchen(kitchen));
     }
 
     @PutMapping("/{id}")
@@ -61,15 +67,14 @@ public class KitchenController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Kitchen> remove(@PathVariable Long id) {
-        Kitchen kitchen = repository.search(id);
-        try {
-            if(kitchen != null) {
-                repository.remove(kitchen);
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
-        } catch (DataIntegrityViolationException e) {
+        try {
+           service.delete(id);
+           return ResponseEntity.noContent().build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (EntityInUseException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
