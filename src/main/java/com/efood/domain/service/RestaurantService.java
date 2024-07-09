@@ -36,6 +36,22 @@ public class RestaurantService {
         return repository.save(restaurant);
     }
 
+    public Restaurant update(Long id, Restaurant restaurant) {
+        Restaurant restaurantDB = getById(id);
+
+        if(restaurantDB == null) {
+            throw new EntityNotFoundException(
+                    String.format("Nao existe cadastro de restaurente com codigo: %d", id)
+            );
+        }
+
+        restaurantDB.setName(restaurant.getName());
+        restaurantDB.setShippingPrice(restaurant.getShippingPrice());
+        restaurantDB.setKitchen(restaurant.getKitchen());
+
+        return repository.save(restaurantDB);
+    }
+
     public List<Restaurant> getAll() {
         return repository.list();
     }

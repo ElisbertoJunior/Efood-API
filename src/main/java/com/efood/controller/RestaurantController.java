@@ -33,8 +33,20 @@ public class RestaurantController {
 
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Restaurant restaurant) {
+        try {
+            restaurant = service.update(id, restaurant);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(restaurant);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<Restaurant>> getAll() {
+
         return ResponseEntity.ok().body(service.getAll());
     }
 
