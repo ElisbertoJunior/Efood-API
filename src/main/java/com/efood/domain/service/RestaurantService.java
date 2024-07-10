@@ -1,10 +1,13 @@
 package com.efood.domain.service;
 
+import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
 import com.efood.infrastructure.repository.KitchenRepositoryJpa;
 import com.efood.infrastructure.repository.RestaurantRepositoryJpa;
 import com.efood.model.Kitchen;
 import com.efood.model.Restaurant;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,5 +61,19 @@ public class RestaurantService {
 
     public Restaurant getById(Long id) {
         return repository.search(id);
+    }
+
+    public void remove(Long stateId) {
+        try {
+            repository.remove(stateId);
+
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException(
+                    String.format("Não existe um cadastro de restaurante com código %d", stateId));
+
+        } catch (DataIntegrityViolationException e) {
+            throw new EntityInUseException(
+                    String.format("Restaurante de código %d não pode ser removido, pois está em uso", stateId));
+        }
     }
 }

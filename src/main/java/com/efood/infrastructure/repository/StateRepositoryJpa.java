@@ -5,6 +5,7 @@ import com.efood.model.State;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -34,8 +35,13 @@ public class StateRepositoryJpa implements StateRepository {
 
     @Override
     @Transactional
-    public void remove(State state) {
-        state = search(state.getId());
+    public void remove(Long id) {
+        State state = search(id);
+
+        if (state == null) {
+            throw new EmptyResultDataAccessException(1);
+        }
+
         manager.remove(state);
     }
 }

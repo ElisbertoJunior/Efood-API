@@ -1,5 +1,6 @@
 package com.efood.controller;
 
+import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
 import com.efood.domain.service.RestaurantService;
 import com.efood.model.Restaurant;
@@ -59,5 +60,17 @@ public class RestaurantController {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            service.remove(id);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (EntityInUseException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
 }

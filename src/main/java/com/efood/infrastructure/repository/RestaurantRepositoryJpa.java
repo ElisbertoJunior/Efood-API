@@ -2,8 +2,10 @@ package com.efood.infrastructure.repository;
 
 import com.efood.domain.repository.RestaurantRepository;
 import com.efood.model.Restaurant;
+import com.efood.model.State;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +37,13 @@ public class RestaurantRepositoryJpa implements RestaurantRepository {
 
     @Override
     @Transactional
-    public void remove(Restaurant Restaurant) {
-        Restaurant = search(Restaurant.getId());
-        manager.remove(Restaurant);
+    public void remove(Long id) {
+        Restaurant restaurant = search(id);
+
+        if (restaurant == null) {
+            throw new EmptyResultDataAccessException(1);
+        }
+
+        manager.remove(restaurant);
     }
 }

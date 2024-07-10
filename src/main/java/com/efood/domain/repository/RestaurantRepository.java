@@ -14,6 +14,6 @@ public interface RestaurantRepository {
 
     Restaurant save(Restaurant kitchen);
 
-    void remove(Restaurant kitchen);
+    void remove(Long id);
 
 }

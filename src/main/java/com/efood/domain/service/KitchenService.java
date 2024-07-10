@@ -3,10 +3,13 @@ package com.efood.domain.service;
 import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
 import com.efood.infrastructure.repository.KitchenRepositoryJpa;
+import com.efood.model.City;
 import com.efood.model.Kitchen;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class KitchenService {
@@ -19,6 +22,27 @@ public class KitchenService {
 
     public Kitchen addKitchen(Kitchen kitchen) {
         return repository.save(kitchen);
+    }
+
+    public List<Kitchen> getAll() {
+        return repository.list();
+    }
+
+    public Kitchen getById(Long id) {
+        return repository.search(id);
+    }
+
+    public Kitchen update(Long id, Kitchen kitchen) {
+        Kitchen kitchenDB = getById(id);
+
+        if(kitchenDB == null)
+            throw new EntityNotFoundException(
+                    String.format("Nao existe cadastro de cozinha com codigo: %d", id)
+            );
+
+        kitchenDB.setName(kitchen.getName());
+
+        return repository.save(kitchenDB);
     }
 
     public void delete(Long id) {
