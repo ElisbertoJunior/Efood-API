@@ -68,7 +68,7 @@ public class RestaurantController {
             service.remove(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (EntityInUseException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }

@@ -66,16 +66,16 @@ public class KitchenController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Kitchen> remove(@PathVariable Long id) {
+    public ResponseEntity<?> remove(@PathVariable Long id) {
 
         try {
            service.delete(id);
            return ResponseEntity.noContent().build();
 
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (EntityInUseException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
 
     }
