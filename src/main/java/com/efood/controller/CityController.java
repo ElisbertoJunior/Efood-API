@@ -2,9 +2,8 @@ package com.efood.controller;
 
 import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
-import com.efood.domain.service.StateService;
-import com.efood.infrastructure.repository.StateRepositoryJpa;
-import com.efood.model.State;
+import com.efood.domain.service.CityService;
+import com.efood.model.City;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,58 +11,53 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/state")
-public class StateController {
+@RequestMapping("/api/city")
+public class CityController {
 
-    private StateService service;
+    private final CityService service;
 
-    public StateController(StateService service) {
+
+    public CityController(CityService service) {
         this.service = service;
     }
 
     @GetMapping
-    public ResponseEntity<List<State>> list() {
+    public ResponseEntity<List<City>> findAll() {
         return ResponseEntity.ok().body(service.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<State> search(@PathVariable Long id) {
-        State state = service.getById(id);
+    public ResponseEntity<City> search(@PathVariable Long id) {
+        City city = service.getById(id);
 
-        if(state != null)
-            return ResponseEntity.ok().body(state);
+        if (city != null)
+            return ResponseEntity.ok().body(city);
 
         return ResponseEntity.notFound().build();
 
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody State state) {
-        try {
-            service.save(state);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(state);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-
+    public ResponseEntity<City> save(@RequestBody City city) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(city));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody State state) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody City city) {
         try {
-            service.update(id, state);
-            return ResponseEntity.ok().body(state);
+            service.update(id, city);
+            return ResponseEntity.ok().body(city);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
-            service.remove(id);
-            return ResponseEntity.noContent().build();
+            service.delete(id);
+            return ResponseEntity.notFound().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (EntityInUseException e) {
