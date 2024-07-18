@@ -27,16 +27,6 @@ public class StateService {
     }
 
     public State save(State state) {
-        long cityId = state.getCity().getId();
-        City city = cityRepositoryJpa.search(cityId);
-
-        if(city == null)
-            throw new EntityNotFoundException(
-                    String.format("Nao existe cadastro de cidade com codigo: %d", cityId)
-            );
-
-        state.setCity(city);
-
         return stateRepositoryJpa.save(state);
     }
 
@@ -50,7 +40,6 @@ public class StateService {
         }
 
         stateDB.setName(state.getName());
-        stateDB.setCity(state.getCity());
 
 
         return stateRepositoryJpa.save(stateDB);

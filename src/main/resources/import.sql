@@ -32,3 +32,5 @@ insert into tab_state (name) values ("SP");
 insert into tab_state (name) values ("SE");
 insert into tab_state (name) values ("TO");
 insert into tab_state (name) values ("DF");
+
+insert into tab_city (name, state_id) values ("Goiania", 8);

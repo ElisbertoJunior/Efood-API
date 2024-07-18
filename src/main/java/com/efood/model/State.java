@@ -19,7 +19,5 @@ public class State {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "city_id")
-    private City city;
+
 }

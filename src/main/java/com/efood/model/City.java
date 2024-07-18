@@ -18,4 +18,8 @@ public class City {
 
     @Column(nullable = false)
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "state_id")
+    private State state;
 }

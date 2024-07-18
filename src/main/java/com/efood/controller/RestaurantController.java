@@ -4,11 +4,15 @@ import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
 import com.efood.domain.service.RestaurantService;
 import com.efood.model.Restaurant;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/restaurant")
@@ -45,9 +49,29 @@ public class RestaurantController {
         }
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> partialUpdate(@PathVariable Long id, @RequestBody Map<String, Object> campos) {
+        Restaurant atualRestaurant = service.getById(id);
+        if(atualRestaurant == null)
+            return ResponseEntity.notFound().build();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Restaurant originRestaurant = objectMapper.convertValue(campos, Restaurant.class);
+
+        campos.forEach((name, value) -> {
+            Field field = ReflectionUtils.findField(Restaurant.class, name);
+            field.setAccessible(true);
+
+            Object newValue = ReflectionUtils.getField(field, originRestaurant);
+
+            ReflectionUtils.setField(field, atualRestaurant, newValue);
+        });
+
+        return update(id, atualRestaurant);
+    }
+
     @GetMapping
     public ResponseEntity<List<Restaurant>> getAll() {
-
         return ResponseEntity.ok().body(service.getAll());
     }
 

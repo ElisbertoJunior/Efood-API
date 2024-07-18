@@ -38,14 +38,9 @@ public class StateController {
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody State state) {
-        try {
-            service.save(state);
+    public ResponseEntity<State> save(@RequestBody State state) {
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(state);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+                    .body(service.save(state));
 
     }
 
