@@ -3,14 +3,10 @@ package com.efood.controller;
 import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
 import com.efood.domain.service.KitchenService;
-import com.efood.infrastructure.repository.KitchenRepositoryJpa;
 import com.efood.model.Kitchen;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import org.springframework.beans.BeanUtils;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

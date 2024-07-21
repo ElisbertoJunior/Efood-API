@@ -2,7 +2,7 @@ package com.efood.domain.service;
 
 import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
-import com.efood.infrastructure.repository.KitchenRepositoryJpa;
+import com.efood.domain.repository.KitchenRepository;
 import com.efood.infrastructure.repository.RestaurantRepositoryJpa;
 import com.efood.model.Kitchen;
 import com.efood.model.Restaurant;
@@ -17,17 +17,17 @@ public class RestaurantService {
 
     private final RestaurantRepositoryJpa repository;
 
-    private final KitchenRepositoryJpa kitchenRepository;
+    private final KitchenService kitchenRepository;
 
 
-    public RestaurantService(RestaurantRepositoryJpa repository, KitchenRepositoryJpa kitchenRepository) {
+    public RestaurantService(RestaurantRepositoryJpa repository, KitchenService kitchenRepository) {
         this.repository = repository;
         this.kitchenRepository = kitchenRepository;
     }
 
     public Restaurant save(Restaurant restaurant) {
         Long kitchenId = restaurant.getKitchen().getId();
-        Kitchen kitchen = kitchenRepository.search(kitchenId);
+        Kitchen kitchen = kitchenRepository.getById(kitchenId);
 
         if(kitchen == null)
             throw new EntityNotFoundException(
