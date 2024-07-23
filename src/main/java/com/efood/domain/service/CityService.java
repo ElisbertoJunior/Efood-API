@@ -3,7 +3,7 @@ package com.efood.domain.service;
 import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
 import com.efood.domain.repository.CityRepository;
-import com.efood.infrastructure.repository.StateRepositoryJpa;
+import com.efood.domain.repository.StateRepository;
 import com.efood.model.City;
 import com.efood.model.State;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,34 +17,34 @@ public class CityService {
 
     private final CityRepository cityRepository;
 
-    private final StateRepositoryJpa stateRepository;
+    private final StateRepository stateRepository;
 
 
-    public CityService(CityRepository cityRepository, StateRepositoryJpa stateRepository) {
+    public CityService(CityRepository cityRepository, StateRepository stateRepository) {
         this.cityRepository = cityRepository;
         this.stateRepository = stateRepository;
     }
 
     public City save(City city) {
-        long stateId = city.getState().getId();
-        State state = stateRepository.search(stateId);
-
-        if(state == null)
-            throw new EntityNotFoundException(
-                    String.format("Nao existe cadastro de estado com codigo: %d", stateId)
-            );
+        Long stateId = city.getState().getId();
+        State state = stateRepository.findById(stateId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Nao existe cadastro de estado com codigo: %d", stateId)));
 
         city.setState(state);
 
-        return cityRepository.save(city);
+       return cityRepository.save(city);
     }
 
     public City getById(Long id) {
-        return cityRepository.search(id);
+        return cityRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(
+                        String.format("Nao existe cadastro de cidade com codigo: %d", id)
+                ));
     }
 
     public List<City> getAll() {
-        return cityRepository.list();
+        return cityRepository.findAll();
     }
 
     public City update(Long id, City city) {
@@ -62,7 +62,7 @@ public class CityService {
 
     public void delete(Long id) {
         try {
-            cityRepository.remove(id);
+            cityRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException(
                     String.format("Nao existe um cadastro de cidade com este codigo %d", id)

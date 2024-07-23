@@ -3,7 +3,7 @@ package com.efood.domain.service;
 import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
 import com.efood.domain.repository.KitchenRepository;
-import com.efood.infrastructure.repository.RestaurantRepositoryJpa;
+import com.efood.domain.repository.RestaurantRepository;
 import com.efood.model.Kitchen;
 import com.efood.model.Restaurant;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,24 +15,24 @@ import java.util.List;
 @Service
 public class RestaurantService {
 
-    private final RestaurantRepositoryJpa repository;
+    private final RestaurantRepository repository;
 
-    private final KitchenService kitchenRepository;
+    private final KitchenRepository kitchenRepositoryJPA;
 
 
-    public RestaurantService(RestaurantRepositoryJpa repository, KitchenService kitchenRepository) {
+    public RestaurantService(RestaurantRepository repository, KitchenRepository kitchenRepositoryJPA) {
         this.repository = repository;
-        this.kitchenRepository = kitchenRepository;
+        this.kitchenRepositoryJPA = kitchenRepositoryJPA;
     }
 
     public Restaurant save(Restaurant restaurant) {
         Long kitchenId = restaurant.getKitchen().getId();
-        Kitchen kitchen = kitchenRepository.getById(kitchenId);
+        Kitchen kitchen = kitchenRepositoryJPA.findById(kitchenId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(
+                                String.format("Nao existe cadastro de cozinha com codigo: %d", kitchenId)
+                        ));
 
-        if(kitchen == null)
-            throw new EntityNotFoundException(
-                    String.format("Nao existe cadastro cozinha com codigo: %d", kitchenId)
-            );
 
         restaurant.setKitchen(kitchen);
 
@@ -56,16 +56,19 @@ public class RestaurantService {
     }
 
     public List<Restaurant> getAll() {
-        return repository.list();
+        return repository.findAll();
     }
 
     public Restaurant getById(Long id) {
-        return repository.search(id);
+        return repository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(
+                        String.format("Nao existe cadastro de restaurante com codigo: %d", id)
+                ));
     }
 
     public void remove(Long stateId) {
         try {
-            repository.remove(stateId);
+            repository.deleteById(stateId);
 
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException(

@@ -1,16 +1,12 @@
 package com.efood.domain.repository;
 
 import com.efood.model.FormPayment;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+@Repository
+public interface FormPaymentRepository extends JpaRepository<FormPayment, Long> {
 
-public interface FormPaymentRepository {
-    List<FormPayment> list();
-
-    FormPayment search(Long id);
-
-    FormPayment save(FormPayment formPayment);
-
-    void delete(FormPayment formPayment);
 
 }

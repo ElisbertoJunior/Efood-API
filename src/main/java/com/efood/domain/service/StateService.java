@@ -2,10 +2,8 @@ package com.efood.domain.service;
 
 import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
-import com.efood.infrastructure.repository.CityRepositoryJpa;
-import com.efood.infrastructure.repository.StateRepositoryJpa;
-import com.efood.model.City;
-import com.efood.model.Restaurant;
+import com.efood.domain.repository.CityRepository;
+import com.efood.domain.repository.StateRepository;
 import com.efood.model.State;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -16,14 +14,14 @@ import java.util.List;
 @Service
 public class StateService {
 
-    private final StateRepositoryJpa stateRepositoryJpa;
+    private final StateRepository stateRepositoryJpa;
 
-    private final CityRepositoryJpa cityRepositoryJpa;
+    private final CityRepository cityRepository;
 
 
-    public StateService(StateRepositoryJpa stateRepositoryJpa, CityRepositoryJpa cityRepositoryJpa) {
+    public StateService(StateRepository stateRepositoryJpa, CityRepository cityRepository) {
         this.stateRepositoryJpa = stateRepositoryJpa;
-        this.cityRepositoryJpa = cityRepositoryJpa;
+        this.cityRepository = cityRepository;
     }
 
     public State save(State state) {
@@ -46,16 +44,20 @@ public class StateService {
     }
 
     public List<State> getAll() {
-        return stateRepositoryJpa.list();
+        return stateRepositoryJpa.findAll();
     }
 
     public State getById(Long id) {
-        return stateRepositoryJpa.search(id);
+        return stateRepositoryJpa.findById(id)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(
+                                String.format("Nao existe cadastro de estado com codigo: %d", id)
+                        ));
     }
 
     public void remove(Long stateId) {
         try {
-            stateRepositoryJpa.remove(stateId);
+            stateRepositoryJpa.deleteById(stateId);
 
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundException(

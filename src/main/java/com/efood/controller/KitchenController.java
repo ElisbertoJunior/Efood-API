@@ -15,29 +15,27 @@ import java.util.List;
 @RequestMapping("/api/kitchen")
 public class KitchenController {
 
-    private KitchenRepositoryJpa repository;
-
     private KitchenService service;
 
-    public KitchenController(KitchenRepositoryJpa repository, KitchenService service) {
-        this.repository = repository;
+    public KitchenController(KitchenService service) {
         this.service = service;
     }
 
 
     @GetMapping
     public ResponseEntity<List<Kitchen>> list() {
-        return ResponseEntity.ok().body(repository.list());
+        return ResponseEntity.ok().body(service.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Kitchen> search(@PathVariable Long id) {
-        Kitchen kitchen = repository.search(id);
+    public ResponseEntity<?> search(@PathVariable Long id) {
+        try {
+            Kitchen kitchen = service.getById(id);
+            return ResponseEntity.ok().body(kitchen);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
 
-        if (kitchen != null)
-            return ResponseEntity.ok(kitchen);
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PostMapping
@@ -47,18 +45,21 @@ public class KitchenController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Kitchen> update(@PathVariable Long id, @RequestBody Kitchen kitchen) {
-        Kitchen kitchenDB = repository.search(id);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Kitchen kitchen) {
+        try {
+            Kitchen kitchenDB = service.getById(id);
 
-        if(kitchenDB != null) {
             BeanUtils.copyProperties(kitchen, kitchenDB, "id");
 
-            repository.save(kitchenDB);
+            service.addKitchen(kitchenDB);
 
             return ResponseEntity.ok(kitchenDB);
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
     }
 
     @DeleteMapping("/{id}")

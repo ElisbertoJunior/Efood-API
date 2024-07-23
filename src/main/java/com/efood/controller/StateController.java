@@ -3,7 +3,6 @@ package com.efood.controller;
 import com.efood.domain.exception.EntityInUseException;
 import com.efood.domain.exception.EntityNotFoundException;
 import com.efood.domain.service.StateService;
-import com.efood.infrastructure.repository.StateRepositoryJpa;
 import com.efood.model.State;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,17 +1,14 @@
 package com.efood.domain.repository;
 
 import com.efood.model.State;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface StateRepository {
+@Repository
+public interface StateRepository extends JpaRepository<State, Long> {
 
-    List<State> list();
 
-    State search(Long id);
-
-    State save(State state);
-
-    void remove(Long id);
 
 }
