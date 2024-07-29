@@ -1,5 +1,6 @@
 package com.efood.domain.infrastructure.repository;
 
+import com.efood.domain.repository.RestaurantRepository;
 import com.efood.domain.repository.RestaurantRepositoryQueries;
 import com.efood.model.Restaurant;
 import jakarta.persistence.EntityManager;
@@ -9,6 +10,8 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -17,11 +20,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.efood.domain.infrastructure.repository.spec.RestaurantSpecs.freeShipping;
+import static com.efood.domain.infrastructure.repository.spec.RestaurantSpecs.similarName;
+
 @Repository
 public class RestaurantRepositoryImpl implements RestaurantRepositoryQueries {
 
     @PersistenceContext
     private EntityManager manager;
+
+    @Autowired
+    @Lazy
+    private RestaurantRepository repository;
 
     //metodo que abrange todos os tipos de find seja todos, por nome ou por taxa
    /* @Override
@@ -81,5 +91,10 @@ public class RestaurantRepositoryImpl implements RestaurantRepositoryQueries {
 
         TypedQuery<Restaurant> query = manager.createQuery(criteria);
         return query.getResultList();
+    }
+
+    @Override
+    public List<Restaurant> findFreeShipping(String name) {
+        return repository.findAll(freeShipping().and(similarName(name)));
     }
 }
