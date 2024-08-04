@@ -1,32 +1,37 @@
 package com.efood.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "tab_kitchen")
+@Table(name = "tab_product")
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Kitchen {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false)
     private String name;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "kitchen")
-    private List<Restaurant> restaurants = new ArrayList<>();
+    private String description;
 
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    @Column(nullable = false)
+    private Boolean active;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Restaurant restaurant;
 
 }

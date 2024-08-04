@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-@Table(name = "tab_formpayment")
-public class FormPayment {
+@Table(name = "tab_payment_methods")
+public class PaymentMethods {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
